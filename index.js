@@ -4,7 +4,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 const { applyMiddleware, pathErrorHandler, globalErrorHandler } = require('./src/middlewares');
 const tasksRoute = require('./src/routes/task');
-const healthRoute = require('./src/routes/health')
+const healthRoute = require('./src/routes/health');
+const dbConnect = require('./src/database/database');
 // apply all additional middlewares
 applyMiddleware(app);
 
@@ -18,7 +19,10 @@ app.use(tasksRoute);
 app.use(pathErrorHandler);
 app.use(globalErrorHandler);
 
-
-app.listen(port, () => {
-    console.log('App Running on Port: ', port);
-})
+const main = async () => {
+    await dbConnect();
+    app.listen(port, () => {
+        console.log('Server Running.');
+    })
+}
+main();
