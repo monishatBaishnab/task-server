@@ -13,7 +13,7 @@ router.get('/tasks', async (req, res, next) => {
 router.get('/tasks/:id', async (req, res, next) => {
     try {
         const taskId = req.params.id;
-        const result = await Task.findOne({_id: taskId});
+        const result = await Task.findOne({ _id: taskId });
         res.send(result);
     } catch (error) {
         next(error);
@@ -34,8 +34,14 @@ router.put('/tasks/:id', async (req, res, next) => {
     try {
         const taskId = req.params.id;
         const data = req.body;
-        const result = await Task.updateOne({_id: taskId}, {$set: {...data}});
-        res.send(result);
+        const findTask = await Task.findById({ _id: taskId });
+
+        if (findTask.status === 'pending') {
+            const result = await Task.updateOne({ _id: taskId }, { $set: { ...data } });
+            res.send(result);
+            return;
+        }
+        res.send("Already Complated.");
     } catch (error) {
         next(error);
     }
@@ -44,7 +50,7 @@ router.put('/tasks/:id', async (req, res, next) => {
 router.delete('/tasks/:id', async (req, res, next) => {
     try {
         const taskId = req.params.id;
-        const result = await Task.deleteOne({_id: taskId});
+        const result = await Task.deleteOne({ _id: taskId });
         res.send(result);
     } catch (error) {
         next(error);
